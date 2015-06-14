@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<!--
+   The following environment variables are expected to be set:
+     1) HADOOP_PREFIX   := location of Hadoop install
+     2) HADOOP_VERSION  := version of Hadoop
+     3) NETCDF_HOME     := location of NetCDF library
+     4) NETCDF_VERSION  := version of NetCDF library
+     5) SCIHADOOP_HOME  := location of SciHadoop install
+   You may have to adjust the names of the Hadoop JAR files listed in the
+   classpath below depending on the version of Hadoop being used.
+-->
+
+<project name="GetDistance" default="main">
+
+  <property name="src.dir" value="src"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="jar.dir" value="${build.dir}/jar"/>
+  <property environment="env"/>
+
+  <path id="classpath">
+    <pathelement location="${env.NETCDF_HOME}/netcdfAll-${env.NETCDF_VERSION}.jar"/>
+    <pathelement location="${env.HADOOP_PREFIX}/share/hadoop/common/hadoop-common-${env.HADOOP_VERSION}.jar" />
+    <pathelement location="${env.HADOOP_PREFIX}/share/hadoop/mapreduce/hadoop-mapreduce-client-common-${env.HADOOP_VERSION}.jar" />
+    <pathelement location="${env.HADOOP_PREFIX}/share/hadoop/mapreduce/hadoop-mapreduce-client-core-${env.HADOOP_VERSION}.jar" />
+    <pathelement location="${env.SCIHADOOP_HOME}/build/jar/hadoop-scidata.jar" />
+  </path>
+
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <mkdir dir="${jar.dir}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac
+      srcdir="${src.dir}"
+      destdir="${classes.dir}"
+      debug="true"
+      includeantruntime="false">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+
+    <!-- flatten classpath first -->
+    <!-- convert classpath to a flat list/string for use in manifest task -->
+    <pathconvert property="myclasspath" pathsep=" ">
+        <path refid="classpath" />
+    </pathconvert>
+
+    <!-- <property name="myclasspath" refid="classpath"/> -->
+    <!-- Emit the property to the ant console -->
+    <echo message="Classpath = ${myclasspath}"/>
+
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="GetDistance"/> 
+        <attribute name="Class-Path" value="${myclasspath}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="GIDG" depends="compile">
+
+    <!-- flatten classpath first -->
+    <!-- convert classpath to a flat list/string for use in manifest task -->
+    <pathconvert property="myclasspath" pathsep=" ">
+        <path refid="classpath" />
+    </pathconvert>
+
+    <!-- <property name="myclasspath" refid="classpath"/> -->
+    <!-- Emit the property to the ant console -->
+    <!-- <echo message="Classpath = ${myclasspath}"/>  -->
+
+    <jar destfile="${jar.dir}/groupIDGenTest.jar" basedir="${classes.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="edu.ucsc.srl.damasc.netcdf.io.GroupIDGen"/> 
+        <attribute name="Class-Path" value="${myclasspath}" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="main" depends="clean,jar"/>
+
+</project>

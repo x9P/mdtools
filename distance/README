@@ -1,0 +1,35 @@
+distance
+---------
+
+calculates the distance between two atoms using MapReduce
+
+
+pre-build:
+==========
+
+you must define several environment variables
+
+NETCDF_HOME     := Damasc NetCDF library (e.g.
+NETCDF_VERSION  := version of NetCDF
+HADOOP_PREFIX   := location of Hadoop install
+HADOOP_VERSION  := version of Hadoop
+SCIHADOOP_HOME  := location of SciHadoop install
+
+*Note: this build has been tested with Hadoop 2.6.0 and NetCDF 4.2
+       for other versions you MAY need to make additional changes to build.xml
+
+to build:
+=========
+
+ant jar
+
+
+to use:
+=======
+
+hadoop jar </path/to>/GetDistance.jar <directory_with_netcdf_files> <output_directory> <atom1> <atom2>
+
+
+
+=====
+in my experience (15 node Hadoop cluster on 7200rpm spinning disks), using a serial program on a single hdd is faster up to about 100 GB trajectories. beyond that, this MR implementation starts winning.
