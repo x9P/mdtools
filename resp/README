@@ -1,0 +1,59 @@
+RESP helper script(s)
+=====================
+James Maier <james@jmaier.info>
+
+
+==============================
+generate_resp_points.py
+==============================
+
+Will generate the points you need for RESP fitting by the Merz-Kollman scheme.
+
+Specifically, you will get points on 1.4, 1.6, 1.8, and 2.0 times the molecular surface as defined by Bondi radii.
+
+
+
+Usage examples*:
+===============
+
+python3 generate_resp_points.py <orca output file>
+
+python3 generate_resp_points.py <gaussian output file>
+
+python3 generate_resp_points.py <gamess output file>
+
+
+*Please note: only Orca is really supported, but with a small amount of work you could use the points for other software to get electrostatic potentials.
+
+
+
+Possible workflow:
+==================
+
+Orca:
+-----
+
+With Orca, you want to make sure that you specify the KeepDens keyword in your job. This will cause Orca to write a .scfp file that can be used to calculate electrostatic potentials
+
+then you can use the orca_vpot program to calculate the electrostatic potentials as such:
+
+orca_vpot <gbw file> <scfp file> <xyz points> <esp output>
+
+the <xyz points> file will need the number of points on the first line, and a leading space before each xyz coordinates
+
+after running orca_vpot, the <esp output> file will have the same contents as <xyz points>, but with the electrostatic potential at the end
+
+be advised that the coordinates in <xyz points> and <esp output> are in units of Bohr,
+            and the electrostatic potentials in <esp output> are in units of eV
+
+
+Gamess:
+-------
+
+Only the reading of coordinates from log files has been tested with Gamess, though I assume if Gamess has a similar ESP program to Orca's orca_vpot, the steps would be similar. Gamess MAY also need some unit conversion but right now units are left in Angstroms. Please email me if you try this out.
+
+
+Gaussian:
+---------
+
+For Gaussian, this really isn't needed, as Gaussian supports the Merz-Kollman scheme natively. Untested.
