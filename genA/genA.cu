@@ -22,7 +22,7 @@
 #include <list>
 #include <map>
 #include "load.cpp"
-
+ 
   const int BLOCK_SIZE=256;
 
 //#define HANDLE_ERROR(x) x;error=cudaGetLastError();if(error!=cudaSuccess){printf("CUDA error: %s\n", cudaGetErrorString(error));exit(-1);}
